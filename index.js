@@ -57,8 +57,6 @@ exports.createOrder = functions.https.onCall(paymentHandler.createOrder);
 exports.razorpayWebhook = functions.https.onRequest(paymentHandler.razorpayWebhook);
 
 // --- TEST ---
-const cors = require('cors')({ origin: true });
-
 exports.ping = functions.https.onRequest((req, res) => {
   cors(req, res, () => {
     res.json({ result: { success: true, message: 'pong' } });
