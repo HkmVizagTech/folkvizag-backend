@@ -30,35 +30,33 @@ const wrapWithCors = (handler, type = 'call') => {
 exports.onUserCreate = functions.auth.user().onCreate(authHandler.onUserCreate);
 
 // --- EVENTS ---
-exports.createEvent = functions.https.onCall(eventHandler.createEvent);
+exports.createEvent = wrapWithCors(eventHandler.createEvent);
 
 // --- ATTENDANCE ---
-exports.verifyAttendance = functions.https.onCall(attendanceHandler.verifyAttendance);
+exports.verifyAttendance = wrapWithCors(attendanceHandler.verifyAttendance);
 
 // --- SADHANA ---
-exports.submitSadhana = functions.https.onCall(sadhanaHandler.submitSadhana);
-exports.getSadhanaMe = functions.https.onCall(sadhanaHandler.getSadhanaMe);
-exports.getSadhanaAdmin = functions.https.onCall(sadhanaHandler.getSadhanaAdmin);
+exports.submitSadhana = wrapWithCors(sadhanaHandler.submitSadhana);
+exports.getSadhanaMe = wrapWithCors(sadhanaHandler.getSadhanaMe);
+exports.getSadhanaAdmin = wrapWithCors(sadhanaHandler.getSadhanaAdmin);
 
 // --- ACCOMMODATION ---
-exports.updateAccommodationStatus = functions.https.onCall(accommodationHandler.updateAccommodationStatus);
+exports.updateAccommodationStatus = wrapWithCors(accommodationHandler.updateAccommodationStatus);
 
 // --- SEVAS ---
-exports.createSeva = functions.https.onCall(sevaHandler.createSeva);
-exports.joinSeva = functions.https.onCall(sevaHandler.joinSeva);
-exports.cancelSeva = functions.https.onCall(sevaHandler.cancelSeva);
-exports.getSevas = functions.https.onCall(sevaHandler.getSevas);
-exports.getMySevas = functions.https.onCall(sevaHandler.getMySevas);
-exports.getSevaParticipants = functions.https.onCall(sevaHandler.getSevaParticipants);
-exports.markSevaAttendance = functions.https.onCall(sevaHandler.markAttendance);
+exports.createSeva = wrapWithCors(sevaHandler.createSeva);
+exports.joinSeva = wrapWithCors(sevaHandler.joinSeva);
+exports.cancelSeva = wrapWithCors(sevaHandler.cancelSeva);
+exports.getSevas = wrapWithCors(sevaHandler.getSevas);
+exports.getMySevas = wrapWithCors(sevaHandler.getMySevas);
+exports.getSevaParticipants = wrapWithCors(sevaHandler.getSevaParticipants);
+exports.markSevaAttendance = wrapWithCors(sevaHandler.markAttendance);
 
 // --- PAYMENTS ---
-exports.createOrder = functions.https.onCall(paymentHandler.createOrder);
-exports.razorpayWebhook = functions.https.onRequest(paymentHandler.razorpayWebhook);
+exports.createOrder = wrapWithCors(paymentHandler.createOrder);
+exports.razorpayWebhook = wrapWithCors(paymentHandler.razorpayWebhook, 'request');
 
 // --- TEST ---
-exports.ping = functions.https.onRequest((req, res) => {
-  cors(req, res, () => {
-    res.json({ result: { success: true, message: 'pong' } });
-  });
-});
+exports.ping = wrapWithCors((req, res) => {
+  res.json({ result: { success: true, message: 'pong' } });
+}, 'request');
