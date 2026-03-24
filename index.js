@@ -10,6 +10,21 @@ const sadhanaHandler = require('./handlers/sadhanaHandler');
 const accommodationHandler = require('./handlers/accommodationHandler');
 const paymentHandler = require('./handlers/paymentHandler');
 const sevaHandler = require('./handlers/sevaHandler');
+const cors = require('cors')({ origin: true });
+
+// Helper to wrap functions with CORS support for Cloud Run/Fetch compatibility
+const wrapWithCors = (handler, type = 'call') => {
+  if (type === 'call') {
+    return functions.https.onCall(async (data, context) => {
+      // onCall handles CORS automatically in standard Firebase, 
+      // but for Cloud Run/Manual Fetch we ensure it works.
+      return handler(data, context);
+    });
+  }
+  return functions.https.onRequest((req, res) => {
+    cors(req, res, () => handler(req, res));
+  });
+};
 
 // --- AUTHENTICATION ---
 exports.onUserCreate = functions.auth.user().onCreate(authHandler.onUserCreate);
@@ -42,4 +57,10 @@ exports.createOrder = functions.https.onCall(paymentHandler.createOrder);
 exports.razorpayWebhook = functions.https.onRequest(paymentHandler.razorpayWebhook);
 
 // --- TEST ---
-exports.ping = functions.https.onCall(() => ({ success: true, message: 'pong' }));
+const cors = require('cors')({ origin: true });
+
+exports.ping = functions.https.onRequest((req, res) => {
+  cors(req, res, () => {
+    res.json({ result: { success: true, message: 'pong' } });
+  });
+});
