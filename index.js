@@ -57,6 +57,16 @@ exports.createOrder = wrapWithCors(paymentHandler.createOrder);
 exports.razorpayWebhook = wrapWithCors(paymentHandler.razorpayWebhook, 'request');
 
 // --- TEST ---
-exports.ping = wrapWithCors((req, res) => {
+exports.ping = functions.https.onRequest((req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  res.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  
+  if (req.method === 'OPTIONS') {
+    res.set('Access-Control-Max-Age', '3600');
+    res.status(204).send('');
+    return;
+  }
+  
   res.json({ result: { success: true, message: 'pong' } });
-}, 'request');
+});
